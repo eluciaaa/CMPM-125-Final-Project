@@ -17,9 +17,7 @@ public class CameraController : MonoBehaviour
     {
         if (followObj != null)
         {
-            // Vector3 setPosition = followObj.transform.position + new Vector3(0f, 12f, -6.29f);
-
-            followCamera.transform.position = followObj.transform.position + new Vector3(0f, 12f, -11f);
+            followCamera.transform.position = followObj.transform.position + new Vector3(0f, 12f, -15f);
         }
     }
 }
