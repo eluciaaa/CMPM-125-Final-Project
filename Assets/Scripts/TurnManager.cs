@@ -22,6 +22,22 @@ public class TurnManager : MonoBehaviour
     public TMP_Text finalScoreText;
     public Button restartButton;
 
+    public Material frozenLakeSkybox;
+    public Material volcanoSkybox;
+    public Material cloudSkybox;
+
+    public GameObject frozenLakeMap;
+    public GameObject volcanoMap;
+    public GameObject cloudMap;
+
+    public Renderer iceRenderer;
+    public Renderer outerSeparatorRenderer;
+    public Renderer innerSeparatorRenderer;
+
+    public Material iceMaterial1;
+    public Material iceMaterial2;
+    public Material iceMaterial3;
+
     private List<GameObject> spawnedRocks = new List<GameObject>();
 
     public Transform spawnPoint;
@@ -61,12 +77,47 @@ public class TurnManager : MonoBehaviour
         // reset game state for a fresh match
         rock.isRoundEnding = false;
         currentRound = 1;
+        SetRoundEnvironment();
         currentTeam = Team.TeamA;
 
         UpdateRoundUI();
         UpdateScoreUI();
 
         StartTurn();
+    }
+
+    void SetRoundEnvironment()
+    {
+        frozenLakeMap.SetActive(false);
+        volcanoMap.SetActive(false);
+        cloudMap.SetActive(false);
+
+        if (currentRound == 1)
+        {
+            frozenLakeMap.SetActive(true);
+            RenderSettings.skybox = frozenLakeSkybox;
+            ApplyIceMaterial(iceMaterial1);
+        }
+        else if (currentRound == 2)
+        {
+            volcanoMap.SetActive(true);
+            RenderSettings.skybox = volcanoSkybox;
+            ApplyIceMaterial(iceMaterial2);
+        }
+        else if (currentRound == 3)
+        {
+            cloudMap.SetActive(true);
+            RenderSettings.skybox = cloudSkybox;
+            ApplyIceMaterial(iceMaterial3);
+        }
+        DynamicGI.UpdateEnvironment();
+    }
+
+    void ApplyIceMaterial(Material mat)
+    {
+        iceRenderer.material = mat;
+        outerSeparatorRenderer.material = mat;
+        innerSeparatorRenderer.material = mat;
     }
 
     IEnumerator InitDelayed()
@@ -92,6 +143,14 @@ public class TurnManager : MonoBehaviour
             rock.SetTeamColor(Color.red);
         else
             rock.SetTeamColor(Color.blue);
+
+        if (rock.rockRenderer != null)
+        {
+            Material mat = rock.rockRenderer.material;
+
+            mat.DisableKeyword("_EMISSION");
+            mat.SetColor("_EmissionColor", Color.black);
+        }
 
         rock.transform.position = spawnPoint.position;
         rock.ResetRock();
@@ -340,6 +399,7 @@ public class TurnManager : MonoBehaviour
                 yield break;
             }
 
+            SetRoundEnvironment();
             UpdateRoundUI();
 
             SwitchTeam();
