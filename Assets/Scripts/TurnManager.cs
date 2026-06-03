@@ -97,18 +97,21 @@ public class TurnManager : MonoBehaviour
             frozenLakeMap.SetActive(true);
             RenderSettings.skybox = frozenLakeSkybox;
             ApplyIceMaterial(iceMaterial1);
+            rock.SetIceEffectColor(Color.white);
         }
         else if (currentRound == 2)
         {
             volcanoMap.SetActive(true);
             RenderSettings.skybox = volcanoSkybox;
             ApplyIceMaterial(iceMaterial2);
+            rock.SetIceEffectColor(Color.black);
         }
         else if (currentRound == 3)
         {
             cloudMap.SetActive(true);
             RenderSettings.skybox = cloudSkybox;
             ApplyIceMaterial(iceMaterial3);
+            rock.SetIceEffectColor(Color.white);
         }
         DynamicGI.UpdateEnvironment();
     }

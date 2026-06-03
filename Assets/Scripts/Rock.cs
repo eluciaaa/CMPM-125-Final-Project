@@ -8,7 +8,14 @@ public class Rock : MonoBehaviour
     public System.Action<Vector3, Quaternion, TurnManager.Team> OnRockStopped;
     public Renderer rockRenderer;
 
+    public ParticleSystem leftParticles;
+    public ParticleSystem rightParticles;
+    public GameObject leftTrail;
+    public GameObject rightTrail;
+    public Color iceEffectColor = Color.white;
+
     private float stillTime = 0f;
+    public float trailSpeedThreshold = 100f;
     public float stopDelay = 0.75f;
     private float shotCooldown = 0.2f;
     private float shotCooldownTimer = 0f;
@@ -21,6 +28,7 @@ public class Rock : MonoBehaviour
     private bool hasShot = false;
     public bool crossedLine = false;
     public bool isRoundEnding = false;
+    private bool effectsActive = false;
 
     public Camera mainCamera;
     public Camera shotCamera;
@@ -112,6 +120,53 @@ public class Rock : MonoBehaviour
             rockRenderer.material.color = color;
     }
 
+    public void SetIceEffectColor(Color color)
+    {
+        iceEffectColor = color;
+
+        // Particle colors
+        if (leftParticles != null)
+        {
+            var main = leftParticles.main;
+            main.startColor = color;
+        }
+
+        if (rightParticles != null)
+        {
+            var main = rightParticles.main;
+            main.startColor = color;
+        }
+
+
+        // Trail colors
+        SetTrailColor(leftTrail, color);
+        SetTrailColor(rightTrail, color); 
+    }
+
+    void SetTrailColor(GameObject trailObj, Color color)
+    {
+        if (trailObj == null) return;
+
+        TrailRenderer trail = trailObj.GetComponent<TrailRenderer>();
+
+        if (trail != null)
+        {
+            trail.startColor = color;
+            trail.endColor = new Color(color.r, color.g, color.b, 0f);
+
+            Material mat = trail.material;
+
+            if (mat != null)
+            {
+                if (mat.HasProperty("_Color"))
+                    mat.SetColor("_Color", color);
+
+                if (mat.HasProperty("_BaseColor"))
+                    mat.SetColor("_BaseColor", color);
+            }
+        }
+    }
+
     void Shoot()
     {
         hasShot = true;
@@ -187,6 +242,45 @@ public class Rock : MonoBehaviour
 
         return rb.linearVelocity.sqrMagnitude > 0.004f;
     }
+
+    bool IsFastEnoughForEffects()
+    {
+        float speed = rb.linearVelocity.magnitude;
+
+        return speed > trailSpeedThreshold;
+    }
+
+    void DisableIceEffects()
+    {
+        effectsActive = false;
+
+        if (leftParticles != null)
+            leftParticles.gameObject.SetActive(false);
+
+        if (rightParticles != null)
+            rightParticles.gameObject.SetActive(false);
+
+
+        if(leftTrail != null)
+        {
+            TrailRenderer t = leftTrail.GetComponent<TrailRenderer>();
+            if(t != null)
+                t.Clear();
+
+            leftTrail.SetActive(false);
+        }
+
+
+        if(rightTrail != null)
+        {
+            TrailRenderer t = rightTrail.GetComponent<TrailRenderer>();
+            if(t != null)
+                t.Clear();
+
+            rightTrail.SetActive(false);
+        }
+    }
+    
     void FixedUpdate()
     {
         ApplyCurl();
@@ -290,6 +384,27 @@ public class Rock : MonoBehaviour
                 if (powerBackground != null) powerBackground.gameObject.SetActive(true);
             }
         }
+        if (hasShot)
+        {
+            if (IsFastEnoughForEffects())
+            {
+                if (!effectsActive)
+                {
+                    effectsActive = true;
+
+                    leftParticles.gameObject.SetActive(true);
+                    rightParticles.gameObject.SetActive(true);
+
+                    leftTrail.SetActive(true);
+                    rightTrail.SetActive(true);
+                }
+            }
+            else
+            {
+                if (effectsActive)
+                    DisableIceEffects();
+            }
+        }
     }
 
     public void ResetRock()
@@ -319,19 +434,20 @@ public class Rock : MonoBehaviour
             if (shotCamera != null) shotCamera.enabled = false;
         }
 
-            bool showGameplayUI = !isRoundEnding;
+        bool showGameplayUI = !isRoundEnding;
 
-            if (powerFill != null)
-            {
-                powerFill.gameObject.SetActive(showGameplayUI);
-                if (showGameplayUI) powerFill.fillAmount = 0f;
-            }
+        if (powerFill != null)
+        {
+            powerFill.gameObject.SetActive(showGameplayUI);
+            if (showGameplayUI) powerFill.fillAmount = 0f;
+        }
 
-            if (powerBackground != null)
-                powerBackground.gameObject.SetActive(showGameplayUI);
+        if (powerBackground != null)
+            powerBackground.gameObject.SetActive(showGameplayUI);
 
-            if (aimArrowUI != null)
-                aimArrowUI.gameObject.SetActive(showGameplayUI);
+        if (aimArrowUI != null)
+            aimArrowUI.gameObject.SetActive(showGameplayUI);
 
+        DisableIceEffects();
     }
 }
