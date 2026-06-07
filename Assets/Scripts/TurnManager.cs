@@ -21,6 +21,11 @@ public class TurnManager : MonoBehaviour
     public TMP_Text winnerText;
     public TMP_Text finalScoreText;
     public Button restartButton;
+    public TMP_Text hazardText1;
+    public TMP_Text hazardText2;
+    public TMP_Text hazardText3;
+
+    private Coroutine hazardFadeRoutine;
 
     public Material frozenLakeSkybox;
     public Material volcanoSkybox;
@@ -37,6 +42,12 @@ public class TurnManager : MonoBehaviour
     public Material iceMaterial1;
     public Material iceMaterial2;
     public Material iceMaterial3;
+
+    public PhysicsMaterial lakePhysics;
+    public PhysicsMaterial obsidianPhysics;
+    public PhysicsMaterial cloudPhysics;
+
+    public Collider iceCollider;
 
     private List<GameObject> spawnedRocks = new List<GameObject>();
 
@@ -71,6 +82,8 @@ public class TurnManager : MonoBehaviour
         // enable player input and hide menu ui
         rock.inputEnabled = true;
 
+        ShowRoundHazardText();
+
         if (controlPanel != null)
             controlPanel.SetActive(false);
 
@@ -97,21 +110,30 @@ public class TurnManager : MonoBehaviour
             frozenLakeMap.SetActive(true);
             RenderSettings.skybox = frozenLakeSkybox;
             ApplyIceMaterial(iceMaterial1);
+            iceCollider.material = lakePhysics;
             rock.SetIceEffectColor(Color.white);
+            rock.fragileIceEnabled = true;
+            rock.lavaEnabled = false;
         }
         else if (currentRound == 2)
         {
             volcanoMap.SetActive(true);
             RenderSettings.skybox = volcanoSkybox;
             ApplyIceMaterial(iceMaterial2);
+            iceCollider.material = obsidianPhysics;
             rock.SetIceEffectColor(Color.black);
+            rock.fragileIceEnabled = false;
+            rock.lavaEnabled = true;
         }
         else if (currentRound == 3)
         {
             cloudMap.SetActive(true);
             RenderSettings.skybox = cloudSkybox;
             ApplyIceMaterial(iceMaterial3);
+            iceCollider.material = cloudPhysics;
             rock.SetIceEffectColor(Color.white);
+            rock.fragileIceEnabled = false;
+            rock.lavaEnabled = false;
         }
         DynamicGI.UpdateEnvironment();
     }
@@ -405,6 +427,8 @@ public class TurnManager : MonoBehaviour
             SetRoundEnvironment();
             UpdateRoundUI();
 
+            ShowRoundHazardText();
+
             SwitchTeam();
             StartTurn();
 
@@ -497,6 +521,15 @@ public class TurnManager : MonoBehaviour
         if (endGamePanel != null)
             endGamePanel.SetActive(false);
 
+        if (hazardText1 != null)
+            hazardText1.gameObject.SetActive(false);
+
+        if (hazardText2 != null)
+            hazardText2.gameObject.SetActive(false);
+
+        if (hazardText3 != null)
+            hazardText3.gameObject.SetActive(false);
+
         rock.isRoundEnding = false;
         rock.ResetRock();
 
@@ -570,6 +603,64 @@ public class TurnManager : MonoBehaviour
         }
 
         turnText.color = new Color(startColor.r, startColor.g, startColor.b, 0f);
+    }
+
+    void ShowRoundHazardText()
+    {
+        if(hazardFadeRoutine != null)
+            StopCoroutine(hazardFadeRoutine);
+
+
+        if(currentRound == 1 && hazardText1 != null)
+        {
+            hazardFadeRoutine = StartCoroutine(
+                FadeHazardText(hazardText1)
+            );
+        }
+
+        else if(currentRound == 2 && hazardText2 != null)
+        {
+            hazardFadeRoutine = StartCoroutine(
+                FadeHazardText(hazardText2)
+            );
+        }
+
+        else if(currentRound == 3 && hazardText3 != null)
+        {
+            hazardFadeRoutine = StartCoroutine(
+                FadeHazardText(hazardText3)
+            );
+        }
+    }
+
+    IEnumerator FadeHazardText(TMP_Text text)
+    {
+        text.gameObject.SetActive(true);
+
+        Color startColor = text.color;
+        startColor.a = 1f;
+        text.color = startColor;
+
+        yield return new WaitForSeconds(1f);
+
+        float duration = 1f;
+        float elapsed = 0f;
+
+        while(elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float alpha = Mathf.Lerp(1f,0f,elapsed/duration);
+
+            text.color = new Color(
+                startColor.r,
+                startColor.g,
+                startColor.b,
+                alpha
+            );
+            yield return null;
+        }
+        text.gameObject.SetActive(false);
     }
 
     public enum Team

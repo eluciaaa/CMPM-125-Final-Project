@@ -29,6 +29,8 @@ public class Rock : MonoBehaviour
     public bool crossedLine = false;
     public bool isRoundEnding = false;
     private bool effectsActive = false;
+    public bool fragileIceEnabled = false;
+    public bool lavaEnabled = false;
 
     public Camera mainCamera;
     public Camera shotCamera;
@@ -211,6 +213,19 @@ public class Rock : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.CompareTag("FragileIce"))
+        {
+            rb.linearVelocity *= 0.99f;
+        }
+
+        if(other.CompareTag("Lava"))
+        {
+            rb.linearVelocity *= 0.97f;
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Triggered with: " + other.name);
@@ -313,6 +328,8 @@ public class Rock : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("Rock Speed: " + rb.linearVelocity.magnitude);
+
         if (isRoundEnding)
         {
             if (aimArrowUI != null) aimArrowUI.gameObject.SetActive(false);
