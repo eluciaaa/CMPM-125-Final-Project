@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.Mathematics;
+using UnityEngine.SceneManagement;
 
 public class TurnManager : MonoBehaviour
 {
@@ -70,11 +71,9 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
-        // show control panel at launch and freeze gameplay until player starts
-        if (controlPanel != null)
-            controlPanel.SetActive(true);
-
         rock.isRoundEnding = true;
+
+        StartGameFromMenu();
     }
 
     public void StartGameFromMenu()
@@ -537,7 +536,7 @@ public class TurnManager : MonoBehaviour
         UpdateRoundUI();
         UpdateTurnUI();
 
-        StartTurn();
+        SceneManager.LoadScene("MainMenu");
     }
 
     GameObject GetClosestRock()

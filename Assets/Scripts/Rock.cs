@@ -73,6 +73,15 @@ public class Rock : MonoBehaviour
         inputEnabled = false;
         rb = GetComponent<Rigidbody>();
 
+        bool particlesEnabled =
+        PlayerPrefs.GetInt("ParticlesEnabled", 1) == 1;
+
+        if (leftParticles != null)
+            leftParticles.gameObject.SetActive(particlesEnabled);
+
+        if (rightParticles != null)
+            rightParticles.gameObject.SetActive(particlesEnabled);
+
         if (mainCamera != null) mainCamera.enabled = true;
         if (shotCamera != null) shotCamera.enabled = false;
 
