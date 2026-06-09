@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class TurnManager : MonoBehaviour
 {
@@ -69,10 +71,24 @@ public class TurnManager : MonoBehaviour
 
     public Transform InnerSeparator;
 
+    public GameObject sun;
+    public Light sunlight;
+    public Volume globalVolume;
+    private Bloom bloom;
+    private ColorAdjustments adjust;
+    private SplitToning split;
+    private WhiteBalance whiteB;
+
+
     void Start()
     {
         rock.isRoundEnding = true;
 
+        globalVolume.profile.TryGet(out bloom);
+        globalVolume.profile.TryGet(out split);
+        globalVolume.profile.TryGet(out whiteB);
+        globalVolume.profile.TryGet(out adjust);
+        
         StartGameFromMenu();
     }
 
@@ -91,7 +107,8 @@ public class TurnManager : MonoBehaviour
         currentRound = 1;
         SetRoundEnvironment();
         currentTeam = Team.TeamA;
-
+        sunlight = sun.GetComponent<Light>();
+        
         UpdateRoundUI();
         UpdateScoreUI();
 
@@ -113,6 +130,14 @@ public class TurnManager : MonoBehaviour
             rock.SetIceEffectColor(Color.white);
             rock.fragileIceEnabled = true;
             rock.lavaEnabled = false;
+
+            sun.transform.rotation = Quaternion.Euler(90, 0, 0);
+            split.balance.value = -16f;
+            whiteB.temperature.value = -20f;
+            whiteB.tint.value = 0f;
+            adjust.postExposure.value = 0.19f;
+            adjust.contrast.value = 7f;
+            bloom.intensity.value = 1.3f;
         }
         else if (currentRound == 2)
         {
@@ -123,6 +148,14 @@ public class TurnManager : MonoBehaviour
             rock.SetIceEffectColor(Color.black);
             rock.fragileIceEnabled = false;
             rock.lavaEnabled = true;
+
+            sun.transform.rotation = Quaternion.Euler(40, 100, 0);
+            split.balance.value = -25f;
+            whiteB.temperature.value = 86f;
+            whiteB.tint.value = 0f;
+            bloom.intensity.value = 9f;
+            adjust.postExposure.value = -0.5f;
+            adjust.contrast.value = 35f;
         }
         else if (currentRound == 3)
         {
@@ -133,6 +166,14 @@ public class TurnManager : MonoBehaviour
             rock.SetIceEffectColor(Color.white);
             rock.fragileIceEnabled = false;
             rock.lavaEnabled = false;
+
+            sun.transform.rotation = Quaternion.Euler(175, 0, 0);
+            bloom.intensity.value = 0.5f;
+            split.balance.value = 28f;
+            whiteB.temperature.value = 16f;
+            whiteB.tint.value = 54f;
+            adjust.postExposure.value = 0f;
+            adjust.contrast.value = 27f;
         }
         DynamicGI.UpdateEnvironment();
     }

@@ -13219,6 +13219,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb3e8f974d394a70b3f4bf3a6c5541e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
+  mainMenuPanel: {fileID: 0}
+  creditsPanel: {fileID: 0}
+  controlsPanel: {fileID: 0}
+  settingsPanel: {fileID: 0}
+  particleToggle: {fileID: 0}
+  fullscreenToggle: {fileID: 0}
 --- !u!4 &654543413
 Transform:
   m_ObjectHideFlags: 0
@@ -17085,6 +17091,9 @@ MonoBehaviour:
   maxRounds: 3
   roundText: {fileID: 897429792}
   InnerSeparator: {fileID: 384518218}
+  sun: {fileID: 410087039}
+  sunlight: {fileID: 0}
+  globalVolume: {fileID: 832575518}
 --- !u!4 &1288324446
 Transform:
   m_ObjectHideFlags: 0
