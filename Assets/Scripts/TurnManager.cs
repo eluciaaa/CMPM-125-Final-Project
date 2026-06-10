@@ -27,6 +27,10 @@ public class TurnManager : MonoBehaviour
     public TMP_Text hazardText2;
     public TMP_Text hazardText3;
 
+    public AudioSource audioSource;
+    public AudioClip roundEndSound;
+    public AudioClip victorySound;
+
     private Coroutine hazardFadeRoutine;
 
     public Material frozenLakeSkybox;
@@ -365,6 +369,11 @@ public class TurnManager : MonoBehaviour
     {
         Debug.Log("Round End Start");
 
+        if (audioSource != null && roundEndSound != null)
+        {
+            audioSource.PlayOneShot(roundEndSound);
+        }
+
         rock.isRoundEnding = true;
 
         yield return new WaitForSeconds(2f);
@@ -516,8 +525,15 @@ public class TurnManager : MonoBehaviour
 
         rock.isRoundEnding = true;
 
+        if (audioSource != null && victorySound != null)
+        {
+            audioSource.PlayOneShot(victorySound);
+        }
+
         if (endGamePanel != null)
+        {
             endGamePanel.SetActive(true);
+        }
 
         string winner;
 

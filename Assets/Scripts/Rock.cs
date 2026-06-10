@@ -14,6 +14,11 @@ public class Rock : MonoBehaviour
     public GameObject rightTrail;
     public Color iceEffectColor = Color.white;
 
+    public AudioSource movementAudio;
+    public AudioSource collisionAudio;
+    public AudioClip slideSound;
+    public AudioClip hitSound;
+
     private float stillTime = 0f;
     public float trailSpeedThreshold = 100f;
     public float stopDelay = 0.75f;
@@ -29,8 +34,7 @@ public class Rock : MonoBehaviour
     public bool crossedLine = false;
     public bool isRoundEnding = false;
     private bool effectsActive = false;
-    public bool fragileIceEnabled = false;
-    public bool lavaEnabled = false;
+    private bool particlesEnabled = true;
 
     public Camera mainCamera;
     public Camera shotCamera;
@@ -73,14 +77,8 @@ public class Rock : MonoBehaviour
         inputEnabled = false;
         rb = GetComponent<Rigidbody>();
 
-        bool particlesEnabled =
-        PlayerPrefs.GetInt("ParticlesEnabled", 1) == 1;
-
-        if (leftParticles != null)
-            leftParticles.gameObject.SetActive(particlesEnabled);
-
-        if (rightParticles != null)
-            rightParticles.gameObject.SetActive(particlesEnabled);
+        particlesEnabled = PlayerPrefs.GetInt("ParticlesEnabled", 1) == 1;
+        ApplyParticleSetting();
 
         if (mainCamera != null) mainCamera.enabled = true;
         if (shotCamera != null) shotCamera.enabled = false;
@@ -89,6 +87,8 @@ public class Rock : MonoBehaviour
         startingRotation = transform.rotation;
 
         power = minPower;
+
+        ApplyParticleSetting();
     }
 
     public void OnMove(InputValue value)
@@ -183,6 +183,13 @@ public class Rock : MonoBehaviour
         hasShot = true;
         inputEnabled = false;
 
+        if (movementAudio != null)
+        {
+            movementAudio.clip = slideSound;
+            movementAudio.loop = true;
+            movementAudio.Play();
+        }
+
         lockedCurl = curlInput;
 
         // apply impulse force to launch rock forward
@@ -220,6 +227,26 @@ public class Rock : MonoBehaviour
             // notify TurnManager that rock has stopped
             OnRockStopped?.Invoke(transform.position, transform.rotation, currentTeam);
         }
+
+        if (movementAudio != null)
+        {
+            movementAudio.Stop();
+        }
+    }
+
+    void ApplyParticleSetting()
+    {
+        if (leftParticles != null)
+            leftParticles.gameObject.SetActive(enabled);
+
+        if (rightParticles != null)
+            rightParticles.gameObject.SetActive(enabled);
+
+        if (leftTrail != null)
+            leftTrail.SetActive(enabled);
+
+        if (rightTrail != null)
+            rightTrail.SetActive(enabled);
     }
 
     private void OnTriggerStay(Collider other)
@@ -266,14 +293,6 @@ public class Rock : MonoBehaviour
 
         return rb.linearVelocity.sqrMagnitude > 0.004f;
     }
-
-    bool IsFastEnoughForEffects()
-    {
-        float speed = rb.linearVelocity.magnitude;
-
-        return speed > trailSpeedThreshold;
-    }
-
     void DisableIceEffects()
     {
         effectsActive = false;
@@ -335,9 +354,31 @@ public class Rock : MonoBehaviour
         if (horizontalVel.sqrMagnitude < 0.01f) return;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Rock"))
+        {
+            if (collisionAudio != null && hitSound != null)
+            {
+                collisionAudio.PlayOneShot(hitSound);
+            }
+        }
+    }
+
     void Update()
     {
         Debug.Log("Rock Speed: " + rb.linearVelocity.magnitude);
+
+        if (movementAudio != null && movementAudio.isPlaying)
+        {
+            float speed = rb.linearVelocity.magnitude;
+
+            movementAudio.volume = Mathf.Clamp(
+                speed / 10f,
+                0f,
+                0.5f
+            );
+        }
 
         if (isRoundEnding)
         {
@@ -412,24 +453,37 @@ public class Rock : MonoBehaviour
         }
         if (hasShot)
         {
-            if (IsFastEnoughForEffects())
-            {
-                if (!effectsActive)
-                {
-                    effectsActive = true;
-
-                    leftParticles.gameObject.SetActive(true);
-                    rightParticles.gameObject.SetActive(true);
-
-                    leftTrail.SetActive(true);
-                    rightTrail.SetActive(true);
-                }
-            }
-            else
+            if (!particlesEnabled)
             {
                 if (effectsActive)
+                {
                     DisableIceEffects();
+                    effectsActive = false;
+                }
+                return;
             }
+            
+            if (!effectsActive)
+            {
+                effectsActive = true;
+
+                if (leftParticles != null)
+                    leftParticles.gameObject.SetActive(true);
+
+                if (rightParticles != null)
+                    rightParticles.gameObject.SetActive(true);
+
+                if (leftTrail != null)
+                    leftTrail.SetActive(true);
+
+                if (rightTrail != null)
+                    rightTrail.SetActive(true); 
+            }
+        }
+        else
+        {
+            DisableIceEffects();
+            effectsActive = false;
         }
     }
 

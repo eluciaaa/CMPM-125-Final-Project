@@ -313,7 +313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Music Volume:\n\nSFX Volume:\n\n      Particles:           Fullscreen:"
+  m_text: "Music Volume:\n\nSFX Volume:\n\n      Stone Particles:           Fullscreen:"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -722,7 +722,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -59, y: -69}
+  m_AnchoredPosition: {x: -11, y: -69}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &221809988
@@ -2000,6 +2000,9 @@ MonoBehaviour:
   creditsPanel: {fileID: 1486608078}
   controlsPanel: {fileID: 845908528}
   settingsPanel: {fileID: 873766481}
+  audioMixer: {fileID: 24100000, guid: 6f78bdf93f27f4fe8adba9bb2ce9518e, type: 2}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
   particleToggle: {fileID: 0}
   fullscreenToggle: {fileID: 0}
 --- !u!4 &546166492
@@ -2471,7 +2474,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 239, y: -69}
+  m_AnchoredPosition: {x: 296, y: -69}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &801317932
@@ -3399,7 +3402,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 98}
+  m_AnchoredPosition: {x: 0, y: 90}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1175344333
@@ -3422,14 +3425,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Frozen Lake BG Music: Melting Ice (pixabay: Royalty Free Music) License:
-    Creative Commons 0
-
-    Volcano BG Music: dirty grind.aif by griffon_designs
-    License: Attribution 4.0
-
-    Clouds BG Music: The Leading Edge (orchestral climax
-    anthem) by SondreDrakensson License: Attribution 4.0'
+  m_text: "Frozen Lake BG Music: Melting Ice (pixabay: Royalty Free Music)\nVolcano
+    BG Music: dirty grind.aif by griffon_designs License: Attribution 4.0\nClouds
+    BG Music: The Leading Edge (orchestral climax anthem) by SondreDrakensson License:
+    Attribution 4.0\nStone Sliding SFX: Curling: stone slides on ice by Quincy Graham
+    on DeadSounds.com\nStone Hitting SFX: Curling: a rock hitting another rock by
+    Brandon Lockman on DeadSounds.com\nRound End SFX: Gaming Victory (pixabay: EAGLAXLE)
+    \nVictory SFX: 11L-Victory-1749704552668 (pixabay: AstralSynthesizer)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3443,10 +3445,10 @@ MonoBehaviour:
   m_enableVertexGradient: 1
   m_colorMode: 2
   m_fontColorGradient:
-    topLeft: {r: 1, g: 0.90821296, b: 0, a: 1}
-    topRight: {r: 1, g: 0.90821296, b: 0, a: 1}
-    bottomLeft: {r: 1, g: 0.59063005, b: 0, a: 1}
-    bottomRight: {r: 1, g: 0.59063005, b: 0, a: 1}
+    topLeft: {r: 0, g: 0, b: 0, a: 1}
+    topRight: {r: 0, g: 0, b: 0, a: 1}
+    bottomLeft: {r: 0, g: 0, b: 0, a: 1}
+    bottomRight: {r: 0, g: 0, b: 0, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
@@ -3456,8 +3458,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
